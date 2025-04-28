@@ -1,12 +1,12 @@
 'use client';
 
-import { usePrivy, useWallets } from '@privy-io/react-auth';
+import { usePrivy, useSignAuthorization, useWallets } from '@privy-io/react-auth';
 import { createSmartAccountClient } from 'permissionless';
 import { toSimpleSmartAccount } from 'permissionless/accounts';
 import { createPublicClient, http, zeroAddress } from 'viem';
 import { sepolia } from 'viem/chains';
 import { createPimlicoClient } from 'permissionless/clients/pimlico';
-import { entryPoint07Address } from 'viem/account-abstraction';
+import { entryPoint07Address, toSimple7702SmartAccount } from 'viem/account-abstraction';
 import { privateKeyToAccount } from 'viem/accounts';
 import { useEffect, useMemo, useState } from 'react';
 import { useAccount, useWalletClient } from 'wagmi';
@@ -17,6 +17,7 @@ export function UserOperation() {
   const [loading, setLoading] = useState(false);
   const [txHash, setTxHash] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const {signAuthorization} = useSignAuthorization();
 
   const { wallets } = useWallets()
   const { data: walletClient } = useWalletClient()  
@@ -54,7 +55,7 @@ export function UserOperation() {
       
       const publicClient = createPublicClient({
         chain: sepolia,
-        transport: http(),
+        transport: http(process.env.NEXT_PUBLIC_SEPOLIA_RPC_URL!),
       });
       
       const pimlicoClient = createPimlicoClient({
@@ -75,14 +76,14 @@ export function UserOperation() {
         throw new Error('No wallet found');
       }
 
-      const simpleSmartAccount = await toSimpleSmartAccount({
-        owner: walletClient,
+      const simpleSmartAccount = await toSimple7702SmartAccount({
+        // @ts-ignore
+        owner: walletClient.account,
         client: publicClient,
-        entryPoint: {
-          address: entryPoint07Address,
-          version: '0.7',
-        },
-      });
+      })
+
+      console.log('factoryArgs')
+      console.log(await simpleSmartAccount.getFactoryArgs())
       
       // Create the smart account client
       const smartAccountClient = createSmartAccountClient({
@@ -96,15 +97,40 @@ export function UserOperation() {
           },
         },
       });
+
+      // const authorization = await signAuthorization({
+      //   contractAddress: '0x91E60e0613810449d098b0b5Ec8b51A0FE8c8985',
+      //   chainId: sepolia.id
+      // })
+
+      // console.log('authorization')
+      // console.log(authorization)
+
+      const userOp = await smartAccountClient.prepareUserOperation({
+        calls: [{
+          to: zeroAddress,
+          data: '0x',
+          value: BigInt(0),
+        }],
+        // authorization
+      })
+
+      console.log('userop')
+      console.log(userOp)
+
+      const userOpHash = await smartAccountClient.sendUserOperation(userOp)
+
+      console.log('useropHash')
+      console.log(userOpHash)
+
+      const hash = await publicClient.waitForTransactionReceipt({
+        hash: userOpHash
+      })
+
+      console.log('hash')
+      console.log(hash.transactionHash)
       
-      // Send a simple transaction
-      const hash = await smartAccountClient.sendTransaction({
-        to: zeroAddress,
-        data: '0x',
-        value: BigInt(0),
-      });
-      
-      setTxHash(hash);
+      setTxHash(hash.transactionHash);
     } catch (err) {
       console.error('Error sending user operation:', err);
       setError(err instanceof Error ? err.message : 'Unknown error');
@@ -137,7 +163,7 @@ export function UserOperation() {
       
       <div className="bg-gray-100 p-4 rounded w-full max-w-md">
         <p className="font-semibold">Connected Address:</p>
-        <p className="break-all">{user?.wallet?.address || 'No address available'}</p>
+        <p className="break-all">{walletClient?.account.address || 'No address available'}</p>
       </div>
       
       <div className="flex gap-4">
