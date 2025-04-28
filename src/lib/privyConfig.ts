@@ -4,7 +4,7 @@ export const privyConfig: PrivyClientConfig = {
   embeddedWallets: {
     createOnLogin: 'all-users',
     requireUserPasswordOnCreate: false,
-    showWalletUIs: true
+    showWalletUIs: true,
   },
   loginMethods: ['wallet', 'email', 'sms'],
   appearance: {
@@ -12,5 +12,5 @@ export const privyConfig: PrivyClientConfig = {
     theme: 'light',
     accentColor: '#3B82F6',
     logo: 'https://your-logo-url.com/logo.png',
-  }
+  },
 };

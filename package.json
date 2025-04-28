@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "format": "biome format --write .",
+    "lint": "biome lint .",
+    "check": "biome check --apply ."
   },
   "dependencies": {
     "@privy-io/react-auth": "^2.11.1",
@@ -32,6 +34,7 @@
     "wagmi": "^2.15.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
     "@tailwindcss/postcss": "^4.1.4",
     "@types/tailwindcss": "^3.1.0",
     "autoprefixer": "^10.4.21",

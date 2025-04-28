@@ -17,24 +17,24 @@ export function UserOperation() {
   const [loading, setLoading] = useState(false);
   const [txHash, setTxHash] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const {signAuthorization} = useSignAuthorization();
+  const { signAuthorization } = useSignAuthorization();
 
-  const { wallets } = useWallets()
-  const { data: walletClient } = useWalletClient()  
+  const { wallets } = useWallets();
+  const { data: walletClient } = useWalletClient();
 
   const embeddedWallet = useMemo(
-    () => wallets.find((wallet) => wallet.walletClientType === "privy"),
+    () => wallets.find((wallet) => wallet.walletClientType === 'privy'),
     [wallets]
-  )
+  );
 
-  const { setActiveWallet } = useSetActiveWallet()
+  const { setActiveWallet } = useSetActiveWallet();
 
   useEffect(() => {
     if (embeddedWallet) {
-      setActiveWallet(embeddedWallet)
+      setActiveWallet(embeddedWallet);
     }
-  }, [embeddedWallet, setActiveWallet])
-  
+  }, [embeddedWallet, setActiveWallet]);
+
   const sendUserOperation = async () => {
     if (!user || !user.wallet?.address) {
       setError('No wallet connected');
@@ -43,21 +43,21 @@ export function UserOperation() {
 
     setLoading(true);
     setError(null);
-    
+
     try {
       const pimlicoApiKey = process.env.NEXT_PUBLIC_PIMLICO_API_KEY;
-      
+
       if (!pimlicoApiKey || pimlicoApiKey === 'YOUR_PIMLICO_API_KEY') {
         throw new Error('Please set a valid Pimlico API key in your .env.local file');
       }
-      
+
       const pimlicoUrl = `https://api.pimlico.io/v2/sepolia/rpc?apikey=${pimlicoApiKey}`;
-      
+
       const publicClient = createPublicClient({
         chain: sepolia,
         transport: http(process.env.NEXT_PUBLIC_SEPOLIA_RPC_URL!),
       });
-      
+
       const pimlicoClient = createPimlicoClient({
         transport: http(pimlicoUrl),
         entryPoint: {
@@ -66,11 +66,11 @@ export function UserOperation() {
         },
       });
 
-      console.log('wallets')
-      console.log(wallets)
-      console.log('walletClient')
-      console.log(walletClient)
-      
+      console.log('wallets');
+      console.log(wallets);
+      console.log('walletClient');
+      console.log(walletClient);
+
       // Get the Privy wallet provider
       if (!user.wallet || !walletClient) {
         throw new Error('No wallet found');
@@ -80,11 +80,11 @@ export function UserOperation() {
         // @ts-ignore
         owner: walletClient.account,
         client: publicClient,
-      })
+      });
 
-      console.log('factoryArgs')
-      console.log(await simpleSmartAccount.getFactoryArgs())
-      
+      console.log('factoryArgs');
+      console.log(await simpleSmartAccount.getFactoryArgs());
+
       // Create the smart account client
       const smartAccountClient = createSmartAccountClient({
         account: simpleSmartAccount,
@@ -107,29 +107,31 @@ export function UserOperation() {
       // console.log(authorization)
 
       const userOp = await smartAccountClient.prepareUserOperation({
-        calls: [{
-          to: zeroAddress,
-          data: '0x',
-          value: BigInt(0),
-        }],
+        calls: [
+          {
+            to: zeroAddress,
+            data: '0x',
+            value: BigInt(0),
+          },
+        ],
         // authorization
-      })
+      });
 
-      console.log('userop')
-      console.log(userOp)
+      console.log('userop');
+      console.log(userOp);
 
-      const userOpHash = await smartAccountClient.sendUserOperation(userOp)
+      const userOpHash = await smartAccountClient.sendUserOperation(userOp);
 
-      console.log('useropHash')
-      console.log(userOpHash)
+      console.log('useropHash');
+      console.log(userOpHash);
 
       const hash = await publicClient.waitForTransactionReceipt({
-        hash: userOpHash
-      })
+        hash: userOpHash,
+      });
 
-      console.log('hash')
-      console.log(hash.transactionHash)
-      
+      console.log('hash');
+      console.log(hash.transactionHash);
+
       setTxHash(hash.transactionHash);
     } catch (err) {
       console.error('Error sending user operation:', err);
@@ -160,12 +162,12 @@ export function UserOperation() {
   return (
     <div className="p-8 flex flex-col items-center gap-4">
       <h1 className="text-2xl font-bold">Privy + Permissionless Demo</h1>
-      
+
       <div className="bg-gray-100 p-4 rounded w-full max-w-md">
         <p className="font-semibold">Connected Address:</p>
         <p className="break-all">{walletClient?.account.address || 'No address available'}</p>
       </div>
-      
+
       <div className="flex gap-4">
         <button
           onClick={sendUserOperation}
@@ -174,7 +176,7 @@ export function UserOperation() {
         >
           {loading ? 'Sending...' : 'Send UserOp'}
         </button>
-        
+
         <button
           onClick={logout}
           className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
@@ -182,7 +184,7 @@ export function UserOperation() {
           Logout
         </button>
       </div>
-      
+
       {txHash && (
         <div className="bg-green-100 p-4 rounded w-full max-w-md">
           <p className="font-semibold">Transaction Hash:</p>
@@ -197,7 +199,7 @@ export function UserOperation() {
           </a>
         </div>
       )}
-      
+
       {error && (
         <div className="bg-red-100 p-4 rounded w-full max-w-md">
           <p className="font-semibold">Error:</p>
