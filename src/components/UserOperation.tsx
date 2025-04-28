@@ -1,6 +1,6 @@
 'use client';
 
-import { usePrivy } from '@privy-io/react-auth';
+import { usePrivy, useWallets } from '@privy-io/react-auth';
 import { createSmartAccountClient } from 'permissionless';
 import { toSimpleSmartAccount } from 'permissionless/accounts';
 import { createPublicClient, http, zeroAddress } from 'viem';
@@ -8,7 +8,9 @@ import { sepolia } from 'viem/chains';
 import { createPimlicoClient } from 'permissionless/clients/pimlico';
 import { entryPoint07Address } from 'viem/account-abstraction';
 import { privateKeyToAccount } from 'viem/accounts';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useAccount, useWalletClient } from 'wagmi';
+import { useSetActiveWallet } from '@privy-io/wagmi';
 
 export function UserOperation() {
   const { user, authenticated, login, logout, ready } = usePrivy();
@@ -16,6 +18,22 @@ export function UserOperation() {
   const [txHash, setTxHash] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const { wallets } = useWallets()
+  const { data: walletClient } = useWalletClient()  
+
+  const embeddedWallet = useMemo(
+    () => wallets.find((wallet) => wallet.walletClientType === "privy"),
+    [wallets]
+  )
+
+  const { setActiveWallet } = useSetActiveWallet()
+
+  useEffect(() => {
+    if (embeddedWallet) {
+      setActiveWallet(embeddedWallet)
+    }
+  }, [embeddedWallet, setActiveWallet])
+  
   const sendUserOperation = async () => {
     if (!user || !user.wallet?.address) {
       setError('No wallet connected');
@@ -46,23 +64,19 @@ export function UserOperation() {
           version: '0.7',
         },
       });
+
+      console.log('wallets')
+      console.log(wallets)
+      console.log('walletClient')
+      console.log(walletClient)
       
       // Get the Privy wallet provider
-      if (!user.wallet) {
+      if (!user.wallet || !walletClient) {
         throw new Error('No wallet found');
       }
-      
-      // Use the wallet address directly as we're using Privy's embedded wallet
-      const privyWalletAddress = user.wallet.address;
-      
-      // Create a local account from a private key for demo purposes
-      // In a real app, you would integrate with the user's Privy wallet properly
-      // This is just for demonstration purposes
-      const demoPrivateKey = '0x1234567890123456789012345678901234567890123456789012345678901234';
-      const localAccount = privateKeyToAccount(demoPrivateKey);
-      
+
       const simpleSmartAccount = await toSimpleSmartAccount({
-        owner: localAccount,
+        owner: walletClient,
         client: publicClient,
         entryPoint: {
           address: entryPoint07Address,
