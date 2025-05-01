@@ -1,16 +1,16 @@
 'use client';
 
-import { usePrivy, useSignAuthorization, useWallets } from '@privy-io/react-auth';
+import { usePrivy, useSignAuthorization, useSignTypedData, useWallets } from '@privy-io/react-auth';
 import { createSmartAccountClient } from 'permissionless';
-import { toSimpleSmartAccount } from 'permissionless/accounts';
-import { createPublicClient, http, zeroAddress } from 'viem';
+import { createPublicClient, createWalletClient, custom, Hex, http, zeroAddress } from 'viem';
 import { sepolia } from 'viem/chains';
 import { createPimlicoClient } from 'permissionless/clients/pimlico';
-import { entryPoint07Address, toSimple7702SmartAccount } from 'viem/account-abstraction';
-import { privateKeyToAccount } from 'viem/accounts';
 import { useEffect, useMemo, useState } from 'react';
-import { useAccount, useWalletClient } from 'wagmi';
+import { toSimple7702SmartAccount } from '@/lib/toSimple7702SmartAccount';
+import { useWalletClient } from 'wagmi';
 import { useSetActiveWallet } from '@privy-io/wagmi';
+
+const title = 'Privy + Permissionless + 7702';
 
 export function UserOperation() {
   const { user, authenticated, login, logout, ready } = usePrivy();
@@ -34,9 +34,9 @@ export function UserOperation() {
       setActiveWallet(embeddedWallet);
     }
   }, [embeddedWallet, setActiveWallet]);
-
+  
   const sendUserOperation = async () => {
-    if (!user || !user.wallet?.address) {
+    if (!user || !user.wallet?.address || !embeddedWallet) {
       setError('No wallet connected');
       return;
     }
@@ -60,30 +60,17 @@ export function UserOperation() {
 
       const pimlicoClient = createPimlicoClient({
         transport: http(pimlicoUrl),
-        entryPoint: {
-          address: entryPoint07Address,
-          version: '0.7',
-        },
       });
 
-      console.log('wallets');
-      console.log(wallets);
-      console.log('walletClient');
-      console.log(walletClient);
-
       // Get the Privy wallet provider
-      if (!user.wallet || !walletClient) {
+      if (!walletClient) {
         throw new Error('No wallet found');
       }
 
       const simpleSmartAccount = await toSimple7702SmartAccount({
-        // @ts-ignore
-        owner: walletClient.account,
+        owner: walletClient,
         client: publicClient,
       });
-
-      console.log('factoryArgs');
-      console.log(await simpleSmartAccount.getFactoryArgs());
 
       // Create the smart account client
       const smartAccountClient = createSmartAccountClient({
@@ -98,15 +85,15 @@ export function UserOperation() {
         },
       });
 
-      // const authorization = await signAuthorization({
-      //   contractAddress: '0x91E60e0613810449d098b0b5Ec8b51A0FE8c8985',
-      //   chainId: sepolia.id
-      // })
+      const authorization = await signAuthorization({
+        contractAddress: '0xe6Cae83BdE06E4c305530e199D7217f42808555B',
+        chainId: sepolia.id,
+        nonce: await publicClient.getTransactionCount({
+          address: walletClient.account.address
+        })
+      })
 
-      // console.log('authorization')
-      // console.log(authorization)
-
-      const userOp = await smartAccountClient.prepareUserOperation({
+      const txnHash = await smartAccountClient.sendTransaction({
         calls: [
           {
             to: zeroAddress,
@@ -114,25 +101,11 @@ export function UserOperation() {
             value: BigInt(0),
           },
         ],
-        // authorization
+        authorization
       });
 
-      console.log('userop');
-      console.log(userOp);
 
-      const userOpHash = await smartAccountClient.sendUserOperation(userOp);
-
-      console.log('useropHash');
-      console.log(userOpHash);
-
-      const hash = await publicClient.waitForTransactionReceipt({
-        hash: userOpHash,
-      });
-
-      console.log('hash');
-      console.log(hash.transactionHash);
-
-      setTxHash(hash.transactionHash);
+      setTxHash(txnHash);
     } catch (err) {
       console.error('Error sending user operation:', err);
       setError(err instanceof Error ? err.message : 'Unknown error');
@@ -148,7 +121,7 @@ export function UserOperation() {
   if (!authenticated) {
     return (
       <div className="p-8 flex flex-col items-center gap-4">
-        <h1 className="text-2xl font-bold">Privy + Permissionless Demo</h1>
+        <h1 className="text-2xl font-bold">{title}</h1>
         <button
           onClick={login}
           className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
@@ -161,11 +134,11 @@ export function UserOperation() {
 
   return (
     <div className="p-8 flex flex-col items-center gap-4">
-      <h1 className="text-2xl font-bold">Privy + Permissionless Demo</h1>
+      <h1 className="text-2xl font-bold">{title}</h1>
 
       <div className="bg-gray-100 p-4 rounded w-full max-w-md">
         <p className="font-semibold">Connected Address:</p>
-        <p className="break-all">{walletClient?.account.address || 'No address available'}</p>
+        <p className="break-all">{embeddedWallet?.address || 'No address available'}</p>
       </div>
 
       <div className="flex gap-4">
