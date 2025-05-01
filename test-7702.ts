@@ -3,10 +3,10 @@ import { createPimlicoClient } from 'permissionless/clients/pimlico';
 import { createPublicClient, http, zeroAddress } from 'viem';
 import { entryPoint07Address, toSimple7702SmartAccount } from 'viem/account-abstraction';
 import { sepolia } from 'viem/chains';
-import { privateKeyToAccount } from 'viem/accounts';
+import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import { createSmartAccountClient } from 'permissionless';
 
-const privateKey = '0x5f992d7dcec6ea7d729c0107356ee38fd0fae75d3328c5280dccbb8915b2227b';
+const privateKey = generatePrivateKey();
 
 const pimlicoApiKey = process.env.NEXT_PUBLIC_PIMLICO_API_KEY;
 
@@ -24,14 +24,12 @@ const main = async () => {
 
   const pimlicoClient = createPimlicoClient({
     transport: http(pimlicoUrl),
-    entryPoint: {
-      address: entryPoint07Address,
-      version: '0.7',
-    },
   });
 
+  const owner = privateKeyToAccount(privateKey)
+
   const simpleSmartAccount = await toSimple7702SmartAccount({
-    owner: privateKeyToAccount(privateKey),
+    owner,
     client: publicClient,
   });
 
@@ -47,7 +45,8 @@ const main = async () => {
       },
     },
   });
-  const userOp = await smartAccountClient.prepareUserOperation({
+
+  const tx = await smartAccountClient.sendTransaction({
     calls: [
       {
         to: zeroAddress,
@@ -55,10 +54,15 @@ const main = async () => {
         value: BigInt(0),
       },
     ],
+    authorization: await owner.signAuthorization({
+      contractAddress: '0xe6Cae83BdE06E4c305530e199D7217f42808555B',
+      chainId: sepolia.id,
+      nonce: 0
+    })
   });
 
-  console.log('userOp');
-  console.log(userOp);
+  console.log('Transaction hash:');
+  console.log(tx);
 };
 
 main()
