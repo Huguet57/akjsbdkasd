@@ -9,6 +9,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { toSimple7702SmartAccount } from '@/lib/toSimple7702SmartAccount';
 import { useWalletClient } from 'wagmi';
 import { useSetActiveWallet } from '@privy-io/wagmi';
+import { Button } from '@/components/ui/button';
 
 const title = 'Privy + Permissionless + 7702';
 
@@ -122,12 +123,12 @@ export function UserOperation() {
     return (
       <div className="p-8 flex flex-col items-center gap-4">
         <h1 className="text-2xl font-bold">{title}</h1>
-        <button
+        <Button
           onClick={login}
           className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
         >
           Login with Privy
-        </button>
+        </Button>
       </div>
     );
   }
@@ -142,20 +143,20 @@ export function UserOperation() {
       </div>
 
       <div className="flex gap-4">
-        <button
+        <Button
           onClick={sendUserOperation}
           disabled={loading}
           className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 disabled:opacity-50"
         >
-          {loading ? 'Sending...' : 'Send UserOp'}
-        </button>
+          {loading ? 'Sending...' : 'Send 7702 UserOp'}
+        </Button>
 
-        <button
+        <Button
           onClick={logout}
           className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
         >
           Logout
-        </button>
+        </Button>
       </div>
 
       {txHash && (
