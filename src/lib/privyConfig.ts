@@ -2,11 +2,11 @@ import type { PrivyClientConfig } from '@privy-io/react-auth';
 
 export const privyConfig: PrivyClientConfig = {
   embeddedWallets: {
-    createOnLogin: 'all-users',
+    createOnLogin: 'users-without-wallets',
     requireUserPasswordOnCreate: false,
     showWalletUIs: true,
   },
-  loginMethods: ['wallet', 'email', 'sms'],
+  loginMethods: ['email', 'sms'],
   appearance: {
     showWalletLoginFirst: true,
     theme: 'light',
