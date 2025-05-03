@@ -54,6 +54,9 @@ const main = async () => {
         value: BigInt(0),
       },
     ],
+    paymasterContext: {
+        sponsorshipPolicyId: process.env.NEXT_PUBLIC_SPONSORSHIP_POLICY_ID
+    },
     authorization: await owner.signAuthorization({
       contractAddress: '0xe6Cae83BdE06E4c305530e199D7217f42808555B',
       chainId: sepolia.id,
