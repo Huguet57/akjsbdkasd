@@ -62,8 +62,9 @@ export async function toSimple7702SmartAccount(
 
   const localOwner = await toOwner({ owner })
 
+  // @ts-ignore
   return toSmartAccount({
-    authorization: {
+   authorization: {
       // @ts-ignore
       account:  localOwner,
       address: implementation
