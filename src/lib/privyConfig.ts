@@ -11,6 +11,6 @@ export const privyConfig: PrivyClientConfig = {
     showWalletLoginFirst: true,
     theme: 'light',
     accentColor: '#43006C',
-    logo: 'https://try7702.pimlico.io/logo-small.square.png',
+    logo: 'https://try7702.pimlico.io/logo-small-square.png',
   },
 };
