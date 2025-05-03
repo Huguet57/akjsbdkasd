@@ -102,6 +102,9 @@ export function UserOperation() {
             value: BigInt(0),
           },
         ],
+        paymasterContext: {
+          sponsorshipPolicyId: process.env.NEXT_PUBLIC_SPONSORSHIP_POLICY_ID
+        },
         authorization
       });
 
