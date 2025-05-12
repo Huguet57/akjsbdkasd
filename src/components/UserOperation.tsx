@@ -1,26 +1,8 @@
 "use client"
 
-import {
-    usePrivy,
-    useSignAuthorization,
-    useSignTypedData,
-    useWallets
-} from "@privy-io/react-auth"
-import { createSmartAccountClient } from "permissionless"
-import {
-    createPublicClient,
-    createWalletClient,
-    custom,
-    Hex,
-    http,
-    zeroAddress
-} from "viem"
-import { sepolia } from "viem/chains"
-import { createPimlicoClient } from "permissionless/clients/pimlico"
 import { useEffect, useMemo, useState } from "react"
-import { toSimple7702SmartAccount } from "@/lib/toSimple7702SmartAccount"
-import { useWalletClient } from "wagmi"
-import { useSetActiveWallet } from "@privy-io/wagmi"
+
+// UI Components
 import { Button } from "@/components/ui/button"
 import {
     Card,
@@ -31,6 +13,30 @@ import {
     CardTitle
 } from "@/components/ui/card"
 import { Loader2 } from "lucide-react"
+
+// Privy
+import {
+    usePrivy,
+    useSignAuthorization,
+    useSignTypedData,
+    useWallets
+} from "@privy-io/react-auth"
+import { useSetActiveWallet } from "@privy-io/wagmi"
+
+// Blockchain
+import { useWalletClient } from "wagmi"
+import {
+    createPublicClient,
+    createWalletClient,
+    custom,
+    Hex,
+    http,
+    zeroAddress
+} from "viem"
+import { sepolia } from "viem/chains"
+import { createSmartAccountClient, toOwner } from "permissionless"
+import { createPimlicoClient } from "permissionless/clients/pimlico"
+import { toSimple7702SmartAccount } from "viem/account-abstraction"
 
 const title = "Privy + Permissionless + 7702"
 
@@ -92,7 +98,9 @@ export function UserOperation() {
             }
 
             const simpleSmartAccount = await toSimple7702SmartAccount({
-                owner: walletClient,
+                owner: await toOwner({
+                    owner: walletClient
+                }),
                 client: publicClient
             })
 

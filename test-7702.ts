@@ -1,92 +1,95 @@
-import 'dotenv/config';
-import { createPimlicoClient } from 'permissionless/clients/pimlico';
-import { createPublicClient, http, zeroAddress } from 'viem';
-import { entryPoint07Address, toSimple7702SmartAccount } from 'viem/account-abstraction';
-import { sepolia } from 'viem/chains';
-import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
-import { createSmartAccountClient } from 'permissionless';
+import "dotenv/config"
+import { createSmartAccountClient } from "permissionless"
+import { createPimlicoClient } from "permissionless/clients/pimlico"
+import { http, createPublicClient, zeroAddress } from "viem"
+import { toSimple7702SmartAccount } from "viem/account-abstraction"
+import { generatePrivateKey, privateKeyToAccount } from "viem/accounts"
+import { sepolia } from "viem/chains"
 
-const privateKey = generatePrivateKey();
+const privateKey = generatePrivateKey()
 
-const pimlicoApiKey = process.env.NEXT_PUBLIC_PIMLICO_API_KEY;
+const pimlicoApiKey = process.env.NEXT_PUBLIC_PIMLICO_API_KEY
 
-if (!pimlicoApiKey || pimlicoApiKey === 'YOUR_PIMLICO_API_KEY') {
-  throw new Error('Please set a valid Pimlico API key in your .env.local file');
+if (!pimlicoApiKey || pimlicoApiKey === "YOUR_PIMLICO_API_KEY") {
+    throw new Error(
+        "Please set a valid Pimlico API key in your .env.local file"
+    )
 }
 
-const pimlicoUrl = `https://api.pimlico.io/v2/sepolia/rpc?apikey=${pimlicoApiKey}`;
+const pimlicoUrl = `https://api.pimlico.io/v2/sepolia/rpc?apikey=${pimlicoApiKey}`
 
 const main = async () => {
-  const publicClient = createPublicClient({
-    chain: sepolia,
-    transport: http(process.env.NEXT_PUBLIC_SEPOLIA_RPC_URL!),
-  });
-
-  const pimlicoClient = createPimlicoClient({
-    transport: http(pimlicoUrl),
-  });
-
-  const owner = privateKeyToAccount(privateKey)
-
-  console.log(`Owner address: ${owner.address}`)
-
-  const simpleSmartAccount = await toSimple7702SmartAccount({
-    owner,
-    client: publicClient,
-  });
-
-  console.log(`Smart account address: ${simpleSmartAccount.address}`)
-
-  // Create the smart account client
-  const smartAccountClient = createSmartAccountClient({
-    account: simpleSmartAccount,
-    chain: sepolia,
-    bundlerTransport: http(pimlicoUrl),
-    paymaster: pimlicoClient,
-    userOperation: {
-      estimateFeesPerGas: async () => {
-        return (await pimlicoClient.getUserOperationGasPrice()).fast;
-      },
-    },
-  });
-
-  const userOp = await smartAccountClient.prepareUserOperation({
-    calls: [
-      {
-        to: zeroAddress,
-        data: '0x',
-        value: BigInt(0),
-      },
-    ],
-    paymasterContext: {
-        sponsorshipPolicyId: process.env.NEXT_PUBLIC_SPONSORSHIP_POLICY_ID
-    },
-    authorization: await owner.signAuthorization({
-      contractAddress: '0xe6Cae83BdE06E4c305530e199D7217f42808555B',
-      chainId: sepolia.id,
-      nonce: 0
+    const publicClient = createPublicClient({
+        chain: sepolia,
+        transport: http(process.env.NEXT_PUBLIC_SEPOLIA_RPC_URL!)
     })
-  });
 
-  console.log('User Operation:');
-  console.log(userOp);
+    const pimlicoClient = createPimlicoClient({
+        transport: http(pimlicoUrl)
+    })
 
-  const userOpHash = await smartAccountClient.sendUserOperation({
-    ...userOp,
-    signature: await simpleSmartAccount.signUserOperation(userOp)
-  });
+    const owner = privateKeyToAccount(privateKey)
 
-  console.log('User Operation Hash:');
-  console.log(userOpHash);
+    console.log(`Owner address: ${owner.address}`)
 
-  const transactionHash = await smartAccountClient.waitForUserOperationReceipt({
-    hash: userOpHash,
-  });
+    const simpleSmartAccount = await toSimple7702SmartAccount({
+        owner,
+        client: publicClient
+    })
 
-  console.log('Transaction Hash:');
-  console.log(transactionHash.receipt.transactionHash);
-};
+    console.log(`Smart account address: ${simpleSmartAccount.address}`)
+
+    // Create the smart account client
+    const smartAccountClient = createSmartAccountClient({
+        account: simpleSmartAccount,
+        chain: sepolia,
+        bundlerTransport: http(pimlicoUrl),
+        paymaster: pimlicoClient,
+        userOperation: {
+            estimateFeesPerGas: async () => {
+                return (await pimlicoClient.getUserOperationGasPrice()).fast
+            }
+        }
+    })
+
+    const userOp = await smartAccountClient.prepareUserOperation({
+        calls: [
+            {
+                to: zeroAddress,
+                data: "0x",
+                value: BigInt(0)
+            }
+        ],
+        paymasterContext: {
+            sponsorshipPolicyId: process.env.NEXT_PUBLIC_SPONSORSHIP_POLICY_ID
+        },
+        authorization: await owner.signAuthorization({
+            contractAddress: "0xe6Cae83BdE06E4c305530e199D7217f42808555B",
+            chainId: sepolia.id,
+            nonce: 0
+        })
+    })
+
+    console.log("User Operation:")
+    console.log(userOp)
+
+    const userOpHash = await smartAccountClient.sendUserOperation({
+        ...userOp,
+        signature: await simpleSmartAccount.signUserOperation(userOp)
+    })
+
+    console.log("User Operation Hash:")
+    console.log(userOpHash)
+
+    const transactionHash =
+        await smartAccountClient.waitForUserOperationReceipt({
+            hash: userOpHash
+        })
+
+    console.log("Transaction Hash:")
+    console.log(transactionHash.receipt.transactionHash)
+}
 
 main()
-  .catch(console.error)
-  .finally(() => process.exit(0));
+    .catch(console.error)
+    .finally(() => process.exit(0))
