@@ -28,10 +28,14 @@ const main = async () => {
 
   const owner = privateKeyToAccount(privateKey)
 
+  console.log(`Owner address: ${owner.address}`)
+
   const simpleSmartAccount = await toSimple7702SmartAccount({
     owner,
     client: publicClient,
   });
+
+  console.log(`Smart account address: ${simpleSmartAccount.address}`)
 
   // Create the smart account client
   const smartAccountClient = createSmartAccountClient({
@@ -46,7 +50,7 @@ const main = async () => {
     },
   });
 
-  const tx = await smartAccountClient.sendTransaction({
+  const userOp = await smartAccountClient.prepareUserOperation({
     calls: [
       {
         to: zeroAddress,
@@ -64,8 +68,23 @@ const main = async () => {
     })
   });
 
-  console.log('Transaction hash:');
-  console.log(tx);
+  console.log('User Operation:');
+  console.log(userOp);
+
+  const userOpHash = await smartAccountClient.sendUserOperation({
+    ...userOp,
+    signature: await simpleSmartAccount.signUserOperation(userOp)
+  });
+
+  console.log('User Operation Hash:');
+  console.log(userOpHash);
+
+  const transactionHash = await smartAccountClient.waitForUserOperationReceipt({
+    hash: userOpHash,
+  });
+
+  console.log('Transaction Hash:');
+  console.log(transactionHash.receipt.transactionHash);
 };
 
 main()
