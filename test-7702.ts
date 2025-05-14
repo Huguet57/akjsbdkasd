@@ -2,9 +2,10 @@ import "dotenv/config"
 import { createSmartAccountClient } from "permissionless"
 import { createPimlicoClient } from "permissionless/clients/pimlico"
 import { http, createPublicClient, zeroAddress } from "viem"
-import { toSimple7702SmartAccount } from "viem/account-abstraction"
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts"
 import { sepolia } from "viem/chains"
+import { toSimpleSmartAccount } from "permissionless/accounts"
+import { entryPoint08Address } from "viem/account-abstraction"
 
 const privateKey = generatePrivateKey()
 
@@ -32,9 +33,14 @@ const main = async () => {
 
     console.log(`Owner address: ${owner.address}`)
 
-    const simpleSmartAccount = await toSimple7702SmartAccount({
+    const simpleSmartAccount = await toSimpleSmartAccount({
         owner,
-        client: publicClient
+        entryPoint: {
+            address: entryPoint08Address,
+            version: "0.8"
+        },
+        client: publicClient,
+        address: owner.address
     })
 
     console.log(`Smart account address: ${simpleSmartAccount.address}`)
@@ -63,6 +69,8 @@ const main = async () => {
         paymasterContext: {
             sponsorshipPolicyId: process.env.NEXT_PUBLIC_SPONSORSHIP_POLICY_ID
         },
+        factory: '0x7702',
+        factoryData: '0x',
         authorization: await owner.signAuthorization({
             contractAddress: "0xe6Cae83BdE06E4c305530e199D7217f42808555B",
             chainId: sepolia.id,
