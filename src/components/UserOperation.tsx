@@ -28,15 +28,14 @@ import { useWalletClient } from "wagmi"
 import {
     createPublicClient,
     createWalletClient,
-    custom,
-    Hex,
     http,
     zeroAddress
 } from "viem"
 import { sepolia } from "viem/chains"
-import { createSmartAccountClient, toOwner } from "permissionless"
+import { createSmartAccountClient } from "permissionless"
 import { createPimlicoClient } from "permissionless/clients/pimlico"
-import { toSimple7702SmartAccount } from "viem/account-abstraction"
+import { entryPoint08Address } from "viem/account-abstraction"
+import { toSimpleSmartAccount } from "permissionless/accounts"
 
 const title = "Privy + Permissionless + 7702"
 
@@ -97,11 +96,14 @@ export function UserOperation() {
                 throw new Error("No wallet found")
             }
 
-            const simpleSmartAccount = await toSimple7702SmartAccount({
-                owner: await toOwner({
-                    owner: walletClient
-                }),
-                client: publicClient
+            const simpleSmartAccount = await toSimpleSmartAccount({
+                owner: walletClient,
+                entryPoint: {
+                    address: entryPoint08Address,
+                    version: "0.8"
+                },
+                client: publicClient,
+                address: walletClient.account.address
             })
 
             // Create the smart account client
@@ -134,6 +136,8 @@ export function UserOperation() {
                         value: BigInt(0)
                     }
                 ],
+                factory: '0x7702',
+                factoryData: '0x',
                 paymasterContext: {
                     sponsorshipPolicyId:
                         process.env.NEXT_PUBLIC_SPONSORSHIP_POLICY_ID
