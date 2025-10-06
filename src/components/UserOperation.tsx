@@ -17,11 +17,13 @@ import { Loader2 } from "lucide-react"
 // Privy
 import {
     usePrivy,
-    useSignAuthorization,
     useSignTypedData,
     useWallets
 } from "@privy-io/react-auth"
 import { useSetActiveWallet } from "@privy-io/wagmi"
+
+// Openfort
+import { useAuthorization } from "@openfort/react"
 
 // Blockchain
 import { useWalletClient } from "wagmi"
@@ -44,7 +46,7 @@ export function UserOperation() {
     const [loading, setLoading] = useState(false)
     const [txHash, setTxHash] = useState<string | null>(null)
     const [error, setError] = useState<string | null>(null)
-    const { signAuthorization } = useSignAuthorization()
+    const { signAuthorization } = useAuthorization()
 
     const { wallets } = useWallets()
     const { data: walletClient } = useWalletClient()
