@@ -1,0 +1,10 @@
+export declare const Container: import("styled-components").StyledComponent<import("framer-motion").ForwardRefComponent<HTMLDivElement, import("framer-motion").HTMLMotionProps<"div">>, any, {}, never>;
+export declare const InfoBox: import("styled-components").StyledComponent<"div", any, {}, never>;
+export declare const InfoBoxButtons: import("styled-components").StyledComponent<"div", any, {}, never>;
+export declare const LearnMoreContainer: import("styled-components").StyledComponent<import("framer-motion").ForwardRefComponent<HTMLDivElement, import("framer-motion").HTMLMotionProps<"div">>, any, {}, never>;
+export declare const LearnMoreButton: import("styled-components").StyledComponent<import("framer-motion").ForwardRefComponent<HTMLButtonElement, import("framer-motion").HTMLMotionProps<"button">>, any, {}, never>;
+export declare const ConnectorsContainer: import("styled-components").StyledComponent<import("framer-motion").ForwardRefComponent<HTMLDivElement, import("framer-motion").HTMLMotionProps<"div">>, any, {}, never>;
+export declare const ConnectorButton: import("styled-components").StyledComponent<import("framer-motion").ForwardRefComponent<HTMLButtonElement, import("framer-motion").HTMLMotionProps<"button">>, any, {}, never>;
+export declare const ConnectorRecentlyUsed: import("styled-components").StyledComponent<import("framer-motion").ForwardRefComponent<HTMLSpanElement, import("framer-motion").HTMLMotionProps<"span">>, any, {}, never>;
+export declare const ConnectorLabel: import("styled-components").StyledComponent<import("framer-motion").ForwardRefComponent<HTMLSpanElement, import("framer-motion").HTMLMotionProps<"span">>, any, {}, never>;
+export declare const ConnectorIcon: import("styled-components").StyledComponent<import("framer-motion").ForwardRefComponent<HTMLDivElement, import("framer-motion").HTMLMotionProps<"div">>, any, {}, never>;

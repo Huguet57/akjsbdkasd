@@ -1,0 +1,10 @@
+export declare const AvatarContainer: import("styled-components").StyledComponent<import("framer-motion").ForwardRefComponent<HTMLDivElement, import("framer-motion").HTMLMotionProps<"div">>, any, {}, never>;
+export declare const AvatarInner: import("styled-components").StyledComponent<import("framer-motion").ForwardRefComponent<HTMLDivElement, import("framer-motion").HTMLMotionProps<"div">>, any, {}, never>;
+export declare const ChainSelectorContainer: import("styled-components").StyledComponent<import("framer-motion").ForwardRefComponent<HTMLDivElement, import("framer-motion").HTMLMotionProps<"div">>, any, {}, never>;
+export declare const BalanceContainer: import("styled-components").StyledComponent<import("framer-motion").ForwardRefComponent<HTMLDivElement, import("framer-motion").HTMLMotionProps<"div">>, any, {}, never>;
+export declare const Balance: import("styled-components").StyledComponent<import("framer-motion").ForwardRefComponent<HTMLDivElement, import("framer-motion").HTMLMotionProps<"div">>, any, {}, never>;
+export declare const LoadingBalance: import("styled-components").StyledComponent<import("framer-motion").ForwardRefComponent<HTMLDivElement, import("framer-motion").HTMLMotionProps<"div">>, any, {}, never>;
+export declare const Unsupported: import("styled-components").StyledComponent<import("framer-motion").ForwardRefComponent<HTMLDivElement, import("framer-motion").HTMLMotionProps<"div">>, any, {}, never>;
+export declare const LinkedProviderContainer: import("styled-components").StyledComponent<import("framer-motion").ForwardRefComponent<HTMLDivElement, import("framer-motion").HTMLMotionProps<"div">>, any, {}, never>;
+export declare const LinkedProviderButton: import("styled-components").StyledComponent<import("react").FC<import("../../Common/Button/types").ButtonProps>, any, {}, never>;
+export declare const ProvidersHeader: import("styled-components").StyledComponent<import("framer-motion").ForwardRefComponent<HTMLHeadingElement, import("framer-motion").HTMLMotionProps<"h3">>, any, {}, never>;

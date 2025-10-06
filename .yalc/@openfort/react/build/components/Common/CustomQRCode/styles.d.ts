@@ -1,0 +1,8 @@
+export declare const QRCodeContainer: import("styled-components").StyledComponent<import("framer-motion").ForwardRefComponent<HTMLDivElement, import("framer-motion").HTMLMotionProps<"div">>, any, {}, never>;
+export declare const QRCodeContent: import("styled-components").StyledComponent<import("framer-motion").ForwardRefComponent<HTMLDivElement, import("framer-motion").HTMLMotionProps<"div">>, any, {}, never>;
+export declare const PlaceholderKeyframes: import("styled-components").Keyframes;
+export declare const QRPlaceholder: import("styled-components").StyledComponent<import("framer-motion").ForwardRefComponent<HTMLDivElement, import("framer-motion").HTMLMotionProps<"div">>, any, {}, never>;
+export declare const LogoContainer: import("styled-components").StyledComponent<import("framer-motion").ForwardRefComponent<HTMLDivElement, import("framer-motion").HTMLMotionProps<"div">>, any, {}, never>;
+export declare const LogoIcon: import("styled-components").StyledComponent<import("framer-motion").ForwardRefComponent<HTMLDivElement, import("framer-motion").HTMLMotionProps<"div">>, any, {
+    $wcLogo?: boolean;
+}, never>;

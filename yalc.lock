@@ -1,0 +1,9 @@
+{
+  "version": "v1",
+  "packages": {
+    "@openfort/react": {
+      "signature": "ad9fbb0289f7ec5d50fad8f71d8fe65a",
+      "file": true
+    }
+  }
+}
