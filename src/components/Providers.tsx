@@ -1,11 +1,11 @@
 "use client"
 
-import { privyConfig } from "@/lib/privyConfig"
 import { wagmiConfig } from "@/lib/wagmiConfig"
-import { PrivyProvider } from "@privy-io/react-auth"
 import { WagmiProvider } from "@privy-io/wagmi"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { useState } from "react"
+
+import { OpenfortProvider } from "@openfort/react"
 
 export function Providers({
     children
@@ -14,16 +14,25 @@ export function Providers({
 }) {
     const [queryClient] = useState(() => new QueryClient())
 
-    console.log(process.env.NEXT_PUBLIC_PRIVY_APP_ID)
-
     return (
-        <PrivyProvider
-            appId={process.env.NEXT_PUBLIC_PRIVY_APP_ID!}
-            config={privyConfig}
-        >
-            <QueryClientProvider client={queryClient}>
-                <WagmiProvider config={wagmiConfig}>{children}</WagmiProvider>
-            </QueryClientProvider>
-        </PrivyProvider>
+        <WagmiProvider config={wagmiConfig}>
+        <QueryClientProvider client={queryClient}>
+            <OpenfortProvider
+                debugMode
+                publishableKey={process.env.NEXT_PUBLIC_OPENFORT_PUBLISHABLE_KEY!}
+    
+                // Set the wallet configuration. In this example, we will be using the embedded signer.
+                walletConfig={{
+                    shieldPublishableKey: process.env.NEXT_PUBLIC_SHIELD_PUBLISHABLE_KEY!, // The public key for your Openfort Shield account get it from https://dashboard.openfort.io
+                    ethereumProviderPolicyId: process.env.NEXT_PUBLIC_OPENFORT_POLICY_ID, // The policy ID for sponsoring transactions
+                    createEncryptedSessionEndpoint: process.env.NEXT_PUBLIC_CREATE_ENCRYPTED_SESSION_ENDPOINT, // The endpoint to create an encryption session for automatic wallet recovery
+                }}
+            >
+                <>
+                {children}
+                </>
+            </OpenfortProvider>
+        </QueryClientProvider>
+      </WagmiProvider>
     )
 }
