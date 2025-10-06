@@ -14,16 +14,8 @@ import {
 } from "@/components/ui/card"
 import { Loader2 } from "lucide-react"
 
-// Privy
-import {
-    usePrivy,
-    useSignTypedData,
-    useWallets
-} from "@privy-io/react-auth"
-import { useSetActiveWallet } from "@privy-io/wagmi"
-
 // Openfort
-import { useAuthorization } from "@openfort/react"
+import { OpenfortButton, useAuthorization, useSignOut, useUser, useWallet, useWallets } from "@openfort/react"
 
 // Blockchain
 import { useWalletClient } from "wagmi"
@@ -39,33 +31,22 @@ import { createPimlicoClient } from "permissionless/clients/pimlico"
 import { entryPoint08Address } from "viem/account-abstraction"
 import { toSimpleSmartAccount } from "permissionless/accounts"
 
-const title = "Privy + Permissionless + 7702"
+const title = "Openfort + Permissionless + 7702"
 
 export function UserOperation() {
-    const { user, authenticated, login, logout, ready } = usePrivy()
+    const { user, isAuthenticated: authenticated } = useUser()
+    const { signOut: logout } = useSignOut()
     const [loading, setLoading] = useState(false)
     const [txHash, setTxHash] = useState<string | null>(null)
     const [error, setError] = useState<string | null>(null)
     const { signAuthorization } = useAuthorization()
 
-    const { wallets } = useWallets()
     const { data: walletClient } = useWalletClient()
 
-    const embeddedWallet = useMemo(
-        () => wallets.find((wallet) => wallet.walletClientType === "privy"),
-        [wallets]
-    )
-
-    const { setActiveWallet } = useSetActiveWallet()
-
-    useEffect(() => {
-        if (embeddedWallet) {
-            setActiveWallet(embeddedWallet)
-        }
-    }, [embeddedWallet, setActiveWallet])
+    const embeddedWallet = useWallet()
 
     const sendUserOperation = async () => {
-        if (!user || !user.wallet?.address || !embeddedWallet) {
+        if (!user || !embeddedWallet) {
             setError("No wallet connected")
             return
         }
@@ -93,7 +74,7 @@ export function UserOperation() {
                 transport: http(pimlicoUrl)
             })
 
-            // Get the Privy wallet provider
+            // Get the wallet provider
             if (!walletClient) {
                 throw new Error("No wallet found")
             }
@@ -156,15 +137,11 @@ export function UserOperation() {
         }
     }
 
-    if (!ready) {
-        return <div className="p-8 text-center">Loading...</div>
-    }
-
     if (!authenticated) {
         return (
             <div className="p-8 flex flex-col items-center gap-4">
                 <h1 className="text-2xl font-bold">{title}</h1>
-                <Button onClick={login}>Login with Privy</Button>
+                <OpenfortButton label="Login with Openfort" />
             </div>
         )
     }
