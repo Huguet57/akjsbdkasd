@@ -11,9 +11,9 @@
         "check": "biome check --apply ."
     },
     "dependencies": {
-        "@privy-io/react-auth": "^2.11.1",
-        "@privy-io/wagmi": "^1.0.3",
-        "@privy-io/wagmi-connector": "^0.1.13",
+        "@openfort/openfort-js": "^0.10.23",
+        "@openfort/openfort-node": "^0.6.73",
+        "@openfort/react": "^0.0.21",
         "@radix-ui/react-slot": "^1.2.0",
         "@tanstack/react-query": "^5.74.7",
         "@types/node": "^22.15.3",
@@ -35,6 +35,7 @@
         "stream-http": "^3.2.0",
         "tailwind-merge": "^3.2.0",
         "typescript": "^5.8.3",
+        "valtio": "^2.1.8",
         "viem": "^2.29.2",
         "wagmi": "^2.15.0"
     },
