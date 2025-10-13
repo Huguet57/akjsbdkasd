@@ -5,7 +5,7 @@ import { WagmiProvider } from "wagmi"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { useState } from "react"
 
-import { OpenfortProvider } from "@openfort/react"
+import { OpenfortProvider, AccountTypeEnum } from "@openfort/react"
 
 export function Providers({
     children
@@ -25,6 +25,7 @@ export function Providers({
                         shieldPublishableKey: process.env.NEXT_PUBLIC_SHIELD_PUBLISHABLE_KEY!, // The public key for your Openfort Shield account get it from https://dashboard.openfort.io
                         ethereumProviderPolicyId: process.env.NEXT_PUBLIC_OPENFORT_POLICY_ID, // The policy ID for sponsoring transactions
                         createEncryptedSessionEndpoint: process.env.NEXT_PUBLIC_CREATE_ENCRYPTED_SESSION_ENDPOINT, // The endpoint to create an encryption session for automatic wallet recovery
+                        accountType: AccountTypeEnum.EOA,
                     }}
                 >
                     <>
