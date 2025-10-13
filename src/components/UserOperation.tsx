@@ -20,7 +20,7 @@ import {
     UserWallet,
     OpenfortButton,
     RecoveryMethod,
-    useAuthorization,
+    use7702Authorization,
     useSignOut,
     useUser,
     useWallet,
@@ -49,7 +49,7 @@ export function UserOperation() {
     const [loading, setLoading] = useState(false)
     const [txHash, setTxHash] = useState<string | null>(null)
     const [error, setError] = useState<string | null>(null)
-    const { signAuthorization } = useAuthorization()
+    const { signAuthorization } = use7702Authorization()
 
     const { data: walletClient } = useWalletClient()
 
