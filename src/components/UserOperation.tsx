@@ -15,7 +15,17 @@ import {
 import { Loader2 } from "lucide-react"
 
 // Openfort
-import { OpenfortButton, useAuthorization, useSignOut, useUser, useWallet, useWallets } from "@openfort/react"
+import {
+    AccountTypeEnum,
+    UserWallet,
+    OpenfortButton,
+    RecoveryMethod,
+    useAuthorization,
+    useSignOut,
+    useUser,
+    useWallet,
+    useWallets
+} from "@openfort/react"
 
 // Blockchain
 import { useWalletClient } from "wagmi"
@@ -43,7 +53,20 @@ export function UserOperation() {
 
     const { data: walletClient } = useWalletClient()
 
-    const embeddedWallet = useWallet()
+    const { wallets, setActiveWallet } = useWallets()
+    const [embeddedWallet, setEmbeddedWallet] = useState<UserWallet | undefined>(undefined)
+
+    useEffect(() => {
+        if (wallets.length > 0) {
+            setActiveWallet({
+                walletId: wallets[0].id,
+                address: wallets[0].address
+            })
+                .then((activeWallet) => {
+                    setEmbeddedWallet(activeWallet.wallet)
+                })
+        }
+    }, [wallets.length])
 
     const sendUserOperation = async () => {
         if (!user || !embeddedWallet) {
