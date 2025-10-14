@@ -3,9 +3,9 @@ import type { Metadata } from "next"
 import "./globals.css"
 
 export const metadata: Metadata = {
-    title: "Privy + Permissionless + 7702",
+    title: "Openfort + Permissionless + 7702",
     description:
-        "A demo of Privy with Permissionless SDK for sending UserOperations"
+        "A demo of Openfort with Permissionless SDK for sending UserOperations"
 }
 
 export default function RootLayout({
