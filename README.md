@@ -1,5 +1,7 @@
 # openfort-permissionless-7702
 
+> **Note:** This is a fork from [@pimlicolabs/permissionless-privy-7702](https://github.com/pimlicolabs/permissionless-privy-7702/tree/main) adapted to work with Openfort.
+
 In this guide, we'll demonstrate how to use Pimlico, a bundler and paymaster service for ERC-4337 accounts, together with Openfort to enable your users to send gasless (sponsored) transactions using EIP-7702 authorization.
 
 ## 0. Install dependencies
